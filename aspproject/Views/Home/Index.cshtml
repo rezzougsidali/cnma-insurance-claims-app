@@ -1,0 +1,466 @@
+﻿@model aspproject.Models.c.DashboardViewModel
+@using System.Globalization
+<div class="container">
+    <h2>Insurance & Claims Dashboard</h2>
+
+    <form asp-action="Index" asp-controller="Home" method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="crmaId">CRMA</label>
+                <select id="crmaId" name="crmaId" class="form-control">
+                    <option value="">Select CRMA</option>
+                    @foreach (var crma in Model.Crmas)
+                    {
+                        <option value="@crma.Id" selected="@(crma.Id == Model.SelectedCrmaId)">@crma.NomCRMA</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="exercice">Exercice</label>
+                <select id="exercice" name="exercice" class="form-control">
+                    <option value="">Select Exercice</option>
+                    @foreach (var ex in Model.Exercices)
+                    {
+                        <option value="@ex" selected="@(ex == Model.SelectedExercice)">@ex</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.Summary != null || Model.ClaimSummary != null)
+    {
+        <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="contracts-tab" data-bs-toggle="tab" data-bs-target="#contracts" type="button" role="tab" aria-controls="contracts" aria-selected="true">Contracts</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="claims-tab" data-bs-toggle="tab" data-bs-target="#claims" type="button" role="tab" aria-controls="claims" aria-selected="false">Claims</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="dashboardTabsContent">
+            <!-- Contracts Tab -->
+            <div class="tab-pane fade show active" id="contracts" role="tabpanel" aria-labelledby="contracts-tab">
+                @if (Model.Summary != null)
+                {
+                    <h3>Récapitulatif</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table">
+                                <tr><th>Prime Commerciale</th><td>@Model.Summary.TotalPrimeCommerciale.ToString("C")</td></tr>
+                                <tr><th>Créances</th><td>@Model.Summary.TotalCreances.ToString("C")</td></tr>
+                                <tr><th>Capital Assuré</th><td>@Model.Summary.TotalCapitalAssure.ToString("C")</td></tr>
+                                <tr><th>Cotisation Nette</th><td>@Model.Summary.TotalCotisationNette.ToString("C")</td></tr>
+                                <tr><th>Nombre Contrat</th><td>@Model.Summary.TotalNombreContrat</td></tr>
+                                <tr><th>Nombre Avenants</th><td>@Model.Summary.TotalNombreAvenants</td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h3>Détails par Branche</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Prime Commerciale</h4>
+                            <canvas id="primeChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Créances</h4>
+                            <canvas id="creancesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Capital Assuré</h4>
+                            <canvas id="capitalChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Cotisation Nette</h4>
+                            <canvas id="cotisationChart"></canvas>
+                        </div>
+                    </div>
+                    <table class="table mt-4">
+                        <thead>
+                            <tr>
+                                <th>Branche</th>
+                                <th>Prime Commerciale</th>
+                                <th>Créances</th>
+                                <th>Capital Assuré</th>
+                                <th>Cotisation Nette</th>
+                                <th>Contrats</th>
+                                <th>Avenants</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var branch in Model.BranchDetails)
+                            {
+                                <tr>
+                                    <td>@branch.BranchName</td>
+                                    <td>@branch.PrimeCommerciale.ToString("C")</td>
+                                    <td>@branch.Creances.ToString("C")</td>
+                                    <td>@branch.CapitalAssure.ToString("C")</td>
+                                    <td>@branch.CotisationNette.ToString("C")</td>
+                                    <td>@branch.NombreContrat</td>
+                                    <td>@branch.NombreAvenants</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+            <!-- Claims Tab -->
+            <div class="tab-pane fade" id="claims" role="tabpanel" aria-labelledby="claims-tab">
+                @if (Model.ClaimSummary != null)
+                {
+                    <h3>Récapitulatif</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table">
+                                <tr><th>Dossiers Ouverts</th><td>@Model.ClaimSummary.TotalDossiersOuverts</td></tr>
+                                <tr><th>Nombre Réserve</th><td>@Model.ClaimSummary.TotalNombreReserve</td></tr>
+                                <tr><th>Montant Réserve</th><td>@Model.ClaimSummary.TotalMontantReserve.ToString("C")</td></tr>
+                                <tr><th>Nombre Règlement</th><td>@Model.ClaimSummary.TotalNombreReglement</td></tr>
+                                <tr><th>Montant Règlement</th><td>@Model.ClaimSummary.TotalMontantReglement.ToString("C")</td></tr>
+                                <tr><th>Nombre SAP</th><td>@Model.ClaimSummary.TotalNombreSap</td></tr>
+                                <tr><th>Montant SAP</th><td>@Model.ClaimSummary.TotalMontantSap.ToString("C")</td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    @if (Model.ClaimBranchDetails != null && Model.ClaimBranchDetails.Any())
+                    {
+                        <h3>Détails par Branche</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Montant Réserve</h4>
+                                <canvas id="reserveChart"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Montant Règlement</h4>
+                                <canvas id="reglementChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Montant SAP</h4>
+                                <canvas id="sapChart"></canvas>
+                            </div>
+                        </div>
+                        <table class="table mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Branche</th>
+                                    <th>Dossiers Ouverts</th>
+                                    <th>Nombre Réserve</th>
+                                    <th>Montant Réserve</th>
+                                    <th>Nombre Règlement</th>
+                                    <th>Montant Règlement</th>
+                                    <th>Nombre SAP</th>
+                                    <th>Montant SAP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var branch in Model.ClaimBranchDetails)
+                                {
+                                    <tr>
+                                        <td>@branch.BranchName</td>
+                                        <td>@branch.DossiersOuverts</td>
+                                        <td>@branch.NombreReserve</td>
+                                        <td>@branch.MontantReserve.ToString("C")</td>
+                                        <td>@branch.NombreReglement</td>
+                                        <td>@branch.MontantReglement.ToString("C")</td>
+                                        <td>@branch.NombreSap</td>
+                                        <td>@branch.MontantSap.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        @if (Model.Summary != null || Model.ClaimSummary != null)
+        {
+            <text>
+                        // Contracts Charts
+                @if (Model.Summary != null)
+                {
+                    <text>
+                                        console.log('Contracts Summary Data:', {
+                                            PrimeCommerciale: @Model.Summary.TotalPrimeCommerciale.ToString("F2", CultureInfo.InvariantCulture),
+                                            Creances: @Model.Summary.TotalCreances.ToString("F2", CultureInfo.InvariantCulture),
+                                            CapitalAssure: @Model.Summary.TotalCapitalAssure.ToString("F2", CultureInfo.InvariantCulture),
+                                            CotisationNette: @Model.Summary.TotalCotisationNette.ToString("F2", CultureInfo.InvariantCulture)
+                                        });
+                                        console.log('Contracts Branch Data:', [
+                        @Html.Raw(string.Join(",", Model.BranchDetails.Select(b => $"{{name: '{b.BranchName.Replace("'", "\\'")}', prime: {b.PrimeCommerciale.ToString("F2", CultureInfo.InvariantCulture)}, creances: {b.Creances.ToString("F2", CultureInfo.InvariantCulture)}, capital: {b.CapitalAssure.ToString("F2", CultureInfo.InvariantCulture)}, cotisation: {b.CotisationNette.ToString("F2", CultureInfo.InvariantCulture)}}}")))
+                                        ]);
+
+                                        const branchLabels = [@Html.Raw(string.Join(",", Model.BranchDetails.Select(b => $"'{b.BranchName.Replace("'", "\\'")}'")))];
+
+                                        new Chart(document.getElementById('primeChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: branchLabels,
+                                                datasets: [{
+                                                    label: 'Prime Commerciale',
+                                                    data: [@Html.Raw(string.Join(",", Model.BranchDetails.Select(b => b.PrimeCommerciale.ToString("F2", CultureInfo.InvariantCulture))))],
+                                                    backgroundColor: '#007bff'
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: function(value) {
+                                                                return value.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+
+                                        new Chart(document.getElementById('creancesChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: branchLabels,
+                                                datasets: [{
+                                                    label: 'Créances',
+                                                    data: [@Html.Raw(string.Join(",", Model.BranchDetails.Select(b => b.Creances.ToString("F2", CultureInfo.InvariantCulture))))],
+                                                    backgroundColor: '#dc3545'
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: function(value) {
+                                                                return value.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+
+                                        new Chart(document.getElementById('capitalChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: branchLabels,
+                                                datasets: [{
+                                                    label: 'Capital Assuré',
+                                                    data: [@Html.Raw(string.Join(",", Model.BranchDetails.Select(b => b.CapitalAssure.ToString("F2", CultureInfo.InvariantCulture))))],
+                                                    backgroundColor: '#28a745'
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: function(value) {
+                                                                return value.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+
+                                        new Chart(document.getElementById('cotisationChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: branchLabels,
+                                                datasets: [{
+                                                    label: 'Cotisation Nette',
+                                                    data: [@Html.Raw(string.Join(",", Model.BranchDetails.Select(b => b.CotisationNette.ToString("F2", CultureInfo.InvariantCulture))))],
+                                                    backgroundColor: '#ffc107'
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: function(value) {
+                                                                return value.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                    </text>
+                }
+
+                        // Claims Charts
+                @if (Model.ClaimSummary != null && Model.ClaimBranchDetails != null && Model.ClaimBranchDetails.Any())
+                {
+                    <text>
+                                        console.log('Claims Summary Data:', {
+                                            DossiersOuverts: @Model.ClaimSummary.TotalDossiersOuverts,
+                                            NombreReserve: @Model.ClaimSummary.TotalNombreReserve,
+                                            MontantReserve: @Model.ClaimSummary.TotalMontantReserve.ToString("F2", CultureInfo.InvariantCulture),
+                                            NombreReglement: @Model.ClaimSummary.TotalNombreReglement,
+                                            MontantReglement: @Model.ClaimSummary.TotalMontantReglement.ToString("F2", CultureInfo.InvariantCulture),
+                                            NombreSap: @Model.ClaimSummary.TotalNombreSap,
+                                            MontantSap: @Model.ClaimSummary.TotalMontantSap.ToString("F2", CultureInfo.InvariantCulture)
+                                        });
+                                        console.log('Claims Branch Data:', [
+                        @Html.Raw(string.Join(",", Model.ClaimBranchDetails.Select(b => $"{{name: '{b.BranchName.Replace("'", "\\'")}', dossiers: {b.DossiersOuverts}, reserve: {b.NombreReserve}, montantReserve: {b.MontantReserve.ToString("F2", CultureInfo.InvariantCulture)}, reglement: {b.NombreReglement}, montantReglement: {b.MontantReglement.ToString("F2", CultureInfo.InvariantCulture)}, sap: {b.NombreSap}, montantSap: {b.MontantSap.ToString("F2", CultureInfo.InvariantCulture)}}}")))
+                                        ]);
+
+                                        const claimBranchLabels = [@Html.Raw(string.Join(",", Model.ClaimBranchDetails.Select(b => $"'{b.BranchName.Replace("'", "\\'")}'")))];
+
+                                        new Chart(document.getElementById('reserveChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: claimBranchLabels,
+                                                datasets: [{
+                                                    label: 'Montant Réserve',
+                                                    data: [@Html.Raw(string.Join(",", Model.ClaimBranchDetails.Select(b => b.MontantReserve.ToString("F2", CultureInfo.InvariantCulture))))],
+                                                    backgroundColor: '#007bff'
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: function(value) {
+                                                                return value.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+
+                                        new Chart(document.getElementById('reglementChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: claimBranchLabels,
+                                                datasets: [{
+                                                    label: 'Montant Règlement',
+                                                    data: [@Html.Raw(string.Join(",", Model.ClaimBranchDetails.Select(b => b.MontantReglement.ToString("F2", CultureInfo.InvariantCulture))))],
+                                                    backgroundColor: '#dc3545'
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: function(value) {
+                                                                return value.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+
+                                        new Chart(document.getElementById('sapChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: claimBranchLabels,
+                                                datasets: [{
+                                                    label: 'Montant SAP',
+                                                    data: [@Html.Raw(string.Join(",", Model.ClaimBranchDetails.Select(b => b.MontantSap.ToString("F2", CultureInfo.InvariantCulture))))],
+                                                    backgroundColor: '#28a745'
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        ticks: {
+                                                            callback: function(value) {
+                                                                return value.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                    </text>
+                }
+            </text>
+        }
+    </script>
+}

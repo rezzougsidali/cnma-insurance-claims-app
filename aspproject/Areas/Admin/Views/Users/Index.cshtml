@@ -1,0 +1,114 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Force layout
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<h2>Users</h2>
+@* <div class="mb-3"> *@
+<div class="mb-3 text-end">
+    <a asp-area="Admin" asp-controller="Users" asp-action="Create" class="btn btn-success">
+        <i class="fas fa-user-plus"></i> Add New User
+    </a>
+</div>
+@* <table class="table"> *@
+<table class="table table-bordered table-hover">
+     <thead>
+         <tr>
+             <th>Email</th>
+             <th>Actions</th>
+        </tr>
+     </thead>
+     <tbody> 
+         @foreach (var user in Model)
+         {
+             <tr>
+                 <td>@user.Email</td>
+                 <td>
+                     @* <a asp-area="Admin" asp-controller="Users" asp-action="Edit" asp-route-id="@user.Id">Edit</a> *@
+                
+                    @* <a href="/Admin/Users/Edit?id=@user.Id" class="btn btn-primary">Edit</a> *@
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary btn-sm">Edit</a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal-@user.Id">
+                        Delete
+                    </button>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal-@user.Id" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirm Delete</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete user @user.Email?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <form asp-action="Delete" method="post">
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <input type="submit" value="Delete" class="btn btn-danger" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </td>
+                 
+             </tr>
+         }
+ </tbody>
+</table>
+
+<style>
+    h2 {
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
+
+    .table th {
+        background-color: #0d6efd;
+        color: white;
+        text-align: center;
+    }
+
+    .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+    }
+
+    .alert {
+        margin-top: 15px;
+    }
+</style>
+
+
+

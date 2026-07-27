@@ -1,0 +1,22 @@
+﻿@model aspproject.Models.EditUserViewModel
+@{
+    var roles = (IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>)ViewBag.AllRoles;
+}
+
+<h2>Edit Roles for @Model.Email</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <div>
+        @foreach (var role in roles)
+        {
+            <div>
+                <input type="checkbox" name="selectedRoles" value="@role.Name"
+                @(Model.Roles.Contains(role.Name) ? "checked" : "") />
+                @role.Name
+            </div>
+        }
+    </div>
+    <button type="submit">Save</button>
+</form>
+

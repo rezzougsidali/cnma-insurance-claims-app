@@ -1,0 +1,157 @@
+﻿@model aspproject.Models.detail_sinistre
+
+@{
+    ViewData["Title"] = "Details";
+}
+<div class="container mt-5">
+<h1>Details</h1>
+
+
+    <div class="card-section">
+    <h4>detail_sinistre</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Numero_police)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Numero_police)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Numero_sinistre)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Numero_sinistre)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Date_Sinistre)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Date_Sinistre)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Etat_Dossier)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Etat_Dossier)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Montant_Reserve)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Montant_Reserve)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Montant_Reglement)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Montant_Reglement)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Montant_Encaisse)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Montant_Encaisse)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.crma_id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.crma_id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.assure_id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.assure_id)
+        </dd>
+    </dl>
+</div>
+</div>
+
+<div>
+   
+    <div class="goback">
+        <a asp-action="Index" class="back-link">← Back to List</a>
+    </div>
+</div>
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    h1, h4 {
+        color: #343a40;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        background-color: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+        .table th {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+    .btn {
+        border-radius: 6px;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+    }
+
+        .back-link:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+        }
+
+    .card-section {
+        background: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    .goback {
+        margin-top: 20px;
+        text-align: left;
+    }
+
+    .back-link {
+        display: inline-block;
+        background-color: #0d6efd;
+        color: white;
+        padding: 10px 18px;
+        text-decoration: none;
+        border-radius: 20px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+        .back-link:hover {
+            background-color: #0b5ed7;
+            text-decoration: none;
+        }
+</style>

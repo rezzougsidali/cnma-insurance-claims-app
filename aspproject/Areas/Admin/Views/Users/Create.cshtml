@@ -1,0 +1,134 @@
+﻿@using aspproject.Models
+@model CreateUserViewModel
+<div class="create-user-wrapper">
+<h2>Create New User</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create User</button>
+        <div class="goback">
+            <a asp-action="Index" class="back-link">← Back to List</a>
+        </div>
+</form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script>
+            // When the user presses "Create User"
+            $('form').on('submit', function (e) {
+                // jQuery-Validate will have attached a .valid() method
+                if (!$(this).valid()) {
+                    // Stop normal submit
+                    e.preventDefault();
+
+                    // Either: native alert
+                    // alert('Veuillez corriger les erreurs avant de soumettre.');
+
+                    // Or: a nicer Bootstrap alert inserted at the top
+                    if (!$('#clientAlert').length) {
+                        $(this)
+                          .prepend(`
+                            <div id="clientAlert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                Veuillez corriger les champs en rouge avant de soumettre.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>`);
+                    }
+                }
+            });
+        </script>
+    }
+    <!-- -------- OPTIONAL GLOBAL / PAGE-LEVEL STYLES -------- -->
+    <style>
+        /* page heading */
+        h2 {
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 30px 0 25px;
+            text-align: center;
+        }
+
+        /* center the form & add a card look */
+        .create-user-wrapper {
+            max-width: 480px;
+            margin: 0 auto; /* horizontally center */
+            background: #ffffff;
+            padding: 30px 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.05);
+        }
+
+        /* labels */
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #495057;
+        }
+
+        /* inputs */
+        .form-control {
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+
+            .form-control:focus {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+            }
+
+        /* validation text */
+        .text-danger {
+            font-size: .875rem;
+            margin-top: 2px;
+        }
+
+        /* primary button */
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        .goback {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .back-link {
+            display: inline-block;
+            background-color: #0d6efd;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+            .back-link:hover {
+                background-color: #0b5ed7;
+                text-decoration: none;
+            }
+    </style>
+
+}

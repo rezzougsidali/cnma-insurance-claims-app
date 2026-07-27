@@ -1,0 +1,169 @@
+﻿@model IEnumerable<aspproject.Models.detail_sinistre>
+
+@{
+    ViewData["Title"] = "Sinistres";
+}
+
+<h1>Sinistres</h1>
+
+
+<div class="form-group">
+    <label for="searchInput">Rechercher sinistres</label>
+    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher par numero de sinistre...">
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Numero_police)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Numero_sinistre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date_Sinistre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Etat_Dossier)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Montant_Reserve)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Montant_Reglement)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Montant_Encaisse)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.crma_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.assure_id)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Numero_police)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Numero_sinistre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date_Sinistre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Etat_Dossier)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Montant_Reserve)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Montant_Reglement)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Montant_Encaisse)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.crma_id)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.assure_id)
+            </td>
+            <td>
+                
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Details</a>
+
+               
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@section Scripts {
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        
+
+            // Live search functionality
+
+        $(document).ready(function () {
+            // Search only by "NumeroContrat" column
+            $('#searchInput').on('keyup', function () {
+                var value = $(this).val().toLowerCase();
+
+                $('table tbody tr').filter(function () {
+                    // td:nth-child(6) corresponds to the 6th <td> (NumeroContrat) in each row
+                    var contratNumber = $(this).find('td:nth-child(2)').text().toLowerCase();
+                    $(this).toggle(contratNumber.indexOf(value) > -1);
+                });
+            });
+        
+   
+          
+            $('.clickable-row').on('click', function () {
+                var contratId = $(this).data('contratid');
+                showGaranties(contratId);
+            });
+          });
+    </script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        h1 {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #343a40;
+            font-weight: 600;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        #searchInput {
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .table thead th {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .clickable-row:hover {
+            background-color: #e9ecef;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body table th {
+            background-color: #f1f1f1;
+        }
+    </style>
+          }

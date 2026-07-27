@@ -1,0 +1,303 @@
+﻿@model IEnumerable<aspproject.Models.detail_contrat>
+
+@{
+    ViewData["Title"] = "Contrat";
+}
+
+
+  
+
+
+<h1>Contrats</h1>
+
+<div class="form-group">
+    <label for="searchInput">Rechercher Contrats</label>
+    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher par numero de contrat...">
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.crma_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.exercice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.assure_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.numero_police)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.date_police)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.numero_contrat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.date_effet)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.date_expiration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prime_nette)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.complement)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.taxes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.timbres)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.montant_net_a_payer)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+            <tr class="clickable-row" data-contratid="@item.Id" style="cursor: pointer;">
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.crma_id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.exercice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.assure_id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.numero_police)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.date_police)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.numero_contrat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.date_effet)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.date_expiration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.prime_nette)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.complement)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.taxes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.timbres)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.montant_net_a_payer)
+            </td>
+            <td>
+                
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Details</a>
+
+              
+                   
+
+
+                
+            </td>
+           
+        </tr>
+}
+    </tbody>
+</table>
+
+
+<!-- Modal  changes-->
+<div class="modal fade" id="garantiesModal" tabindex="-1" role="dialog" aria-labelledby="garantiesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Use modal-lg for wider table -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="garantiesModalLabel">Garanties du Contrat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="garantiesModalBody">
+                <!-- Garantie data will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        
+
+            // Live search functionality
+
+        $(document).ready(function () {
+            // Search only by "NumeroContrat" column
+            $('#searchInput').on('keyup', function () {
+                var value = $(this).val().toLowerCase();
+
+                $('table tbody tr').filter(function () {
+                    // td:nth-child(6) corresponds to the 6th <td> (NumeroContrat) in each row
+                    var contratNumber = $(this).find('td:nth-child(6)').text().toLowerCase();
+                    $(this).toggle(contratNumber.indexOf(value) > -1);
+                });
+            });
+        
+   
+          
+            $('.clickable-row').on('click', function () {
+                var contratId = $(this).data('contratid');
+                showGaranties(contratId);
+            });
+          });
+
+
+  
+            function showGaranties(contratId) {
+            var url = '@Url.Action("GetGarantiesByContratId", "detail_contrat")'; // moved outside AJAX block
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { contratId: contratId },
+                success: function (data) {
+                    // Build the table with extra Bootstrap colour classes
+                    let html = '<table class="garantie-table table table-bordered table-hover table-striped">' +
+                               '<thead><tr>' +
+                               '<th>Nom</th>' +
+                               '<th>Code</th>' +
+                               '<th>Capital</th>' +
+                               '<th>Majoration</th>' +
+                               '<th>Reduction</th>' +
+                               '<th>Prime Nette</th>' +
+                               '</tr></thead><tbody>';
+
+                    if (!data || data.length === 0) {
+                        html += '<tr><td colspan="6" class="text-center text-muted">Aucune garantie trouvée pour ce contrat.</td></tr>';
+                    } else {
+                        data.forEach(function (g) {
+                            // Colour-code rows by prime value
+                            let rowClass = '';
+                            if (g.primeNette > 0)        rowClass = 'table-success';
+                            else if (g.primeNette < 0)   rowClass = 'table-danger';
+                            else                         rowClass = 'table-warning';
+
+                            html += `<tr class="${rowClass}">
+                                        <td>${g.nom ?? '-'}</td>
+                                        <td>${g.codeGarantie ?? '-'}</td>
+                                        <td>${g.capital ?? '-'}</td>
+                                        <td>${g.majoration ?? '-'}</td>
+                                        <td>${g.reduction ?? '-'}</td>
+                                        <td>${g.primeNette ?? '-'}</td>
+                                     </tr>`;
+                        });
+                    }
+
+                    html += '</tbody></table>';
+                    $('#garantiesModalBody').html(html);
+                    $('#garantiesModal').modal('show');
+                },
+                error: function () {
+                    $('#garantiesModalBody').html('<div class="text-danger">Une erreur est survenue lors du chargement des garanties.</div>');
+                    $('#garantiesModal').modal('show');
+                }
+            });
+        }
+
+
+
+
+</script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        h1 {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #343a40;
+            font-weight: 600;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        #searchInput {
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .table thead th {
+            background-color: #343a40;
+            
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .clickable-row:hover {
+            background-color: #e9ecef;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body table th {
+            background-color: #f1f1f1;
+        }
+        /* --- Garantie modal table styling --- */
+        .garantie-table thead th {
+            background-color: #0d6efd; /* Bootstrap primary blue */
+            color: #fff;
+        }
+
+        .garantie-table tbody td {
+            vertical-align: middle;
+        }
+        /* Soften the red color for negative rows */
+        table.table .table-danger td {
+            background-color: #f8d7da !important; /* lighter red */
+            color: #842029 !important; /* darker red text */
+        }
+
+
+    </style>
+
+    
+}
+
+
+
